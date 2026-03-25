@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Prime Heritage Trust Bank</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F5F7FB; color: #1A2C3E; }
+    .app-container { max-width: 500px; margin: 0 auto; background: #FFFFFF; min-height: 100vh; position: relative; padding-bottom: 80px; }
+    .status-bar { background: #0A2540; padding: 12px 20px; display: flex; justify-content: space-between; color: white; font-size: 14px; font-weight: 500; }
+    .header { background: #0A2540; padding: 20px; color: white; }
+    .greeting { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+    .greeting span { font-weight: 400; font-size: 16px; opacity: 0.8; }
+    .account-name { font-size: 14px; opacity: 0.7; margin-bottom: 20px; word-break: break-all; }
+    .balance-card { background: #0F2B3D; border-radius: 24px; padding: 20px; margin-top: 8px; }
+    .balance-label { font-size: 14px; opacity: 0.7; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .balance-amount { font-size: 36px; font-weight: 700; display: flex; align-items: baseline; justify-content: space-between; }
+    .balance-amount .currency { font-size: 20px; }
+    .balance-status { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 12px; opacity: 0.7; }
+    .status-badge { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 11px; }
+    .last-updated { font-size: 10px; }
+    .swipe-hint { text-align: center; font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .quick-actions { display: flex; justify-content: space-around; padding: 20px; background: white; border-bottom: 1px solid #F0F2F5; }
+    .action-item { text-align: center; cursor: pointer; transition: 0.2s; }
+    .action-item:active { transform: scale(0.95); }
+    .action-icon { width: 48px; height: 48px; background: #F5F7FB; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .action-icon i { font-size: 22px; color: #0A2540; }
+    .action-item span { font-size: 12px; font-weight: 500; color: #4A5568; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 8px; }
+    .section-header h3 { font-size: 16px; font-weight: 600; color: #1A2C3E; }
+    .section-header a { font-size: 13px; color: #F5A623; text-decoration: none; }
+    .beneficiaries-list { padding: 0 20px; display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none; }
+    .beneficiaries-list::-webkit-scrollbar { display: none; }
+    .beneficiary-item { text-align: center; min-width: 60px; cursor: pointer; }
+    .beneficiary-avatar { width: 56px; height: 56px; background: #F5F7FB; border-radius: 28px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; transition: 0.2s; }
+    .beneficiary-avatar i { font-size: 24px; color: #9AA9B9; }
+    .beneficiary-item span { font-size: 12px; color: #4A5568; }
+    .add-beneficiary .beneficiary-avatar { background: #F5F7FB; border: 1px dashed #CBD5E0; }
+    .add-beneficiary i { color: #F5A623; }
+    .cards-section { padding: 0 20px; margin: 16px 0; }
+    .card-item { background: linear-gradient(135deg, #1F4A6E, #0A2540); border-radius: 20px; padding: 16px; color: white; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+    .card-item:active { transform: scale(0.98); }
+    .card-info h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; opacity: 0.8; }
+    .card-number { font-family: monospace; font-size: 14px; letter-spacing: 1px; }
+    .card-chip { font-size: 28px; }
+    .services-section { padding: 16px 20px; }
+    .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 12px; }
+    .service-card { text-align: center; padding: 12px 8px; background: #F8FAFE; border-radius: 16px; cursor: pointer; transition: 0.2s; }
+    .service-card:active { transform: scale(0.96); background: #F5A62310; }
+    .service-card i { font-size: 24px; color: #F5A623; margin-bottom: 8px; display: block; }
+    .service-card span { font-size: 11px; font-weight: 500; color: #4A5568; }
+    .bottom-nav { position: fixed; bottom: 0; max-width: 500px; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 20px 24px; border-top: 1px solid #E9EDF2; }
+    .nav-item { text-align: center; color: #9AA9B9; text-decoration: none; transition: 0.2s; }
+    .nav-item.active { color: #F5A623; }
+    .nav-item i { font-size: 22px; }
+    .nav-item span { font-size: 11px; display: block; margin-top: 4px; }
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .modal.active { opacity: 1; visibility: visible; }
+    .modal-content { background: white; border-radius: 32px; padding: 32px; width: 90%; max-width: 380px; text-align: center; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-content input, .modal-content select { width: 100%; padding: 14px; border: 1px solid #E2E8F0; border-radius: 16px; margin: 8px 0; font-family: inherit; }
+    .modal-content button { width: 100%; padding: 14px; background: #F5A623; color: #0A2540; border: none; border-radius: 40px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .loading-overlay.active { opacity: 1; visibility: visible; }
+    .spinner { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top-color: #F5A623; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1A2C3E; color: white; padding: 12px 24px; border-radius: 40px; z-index: 1100; animation: fadeUp 0.3s ease; font-size: 14px; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .receipt { background: white; border-radius: 32px; width: 90%; max-width: 380px; overflow: hidden; }
+    .receipt-header { background: linear-gradient(135deg, #0A2540, #1F4A6E); color: white; padding: 24px; text-align: center; }
+    .receipt-body { padding: 24px; }
+    .receipt-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #E2E8F0; }
+    .empty-state { text-align: center; padding: 40px; color: #9AA9B9; }
+    .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+    .balance-eye { cursor: pointer; transition: 0.2s; margin-left: 8px; }
+    .balance-eye:hover { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Status Bar with REAL TIME -->
+    <div class="status-bar"><span id="currentTime">--:--</span><span><i class="fas fa-signal"></i> <i class="fas fa-battery-full"></i></span></div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="greeting" id="greetingMessage">Good Morning 🌙<br><span id="userName">Loading...</span></div>
+      <div class="account-name" id="accountNumber">PRIME HERITAGE TRUST BANK • Fiat Account • Loading...</div>
+      
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="balance-label">
+          Available Balance 
+          <i class="fas fa-eye balance-eye" id="balanceEye"></i>
+        </div>
+        <div class="balance-amount">
+          <span class="currency" id="currencySymbol">$</span>
+          <span id="balanceAmount">0.00</span>
+        </div>
+        <div class="balance-status">
+          <span class="status-badge" id="accountStatus">🔒 Inactive</span>
+          <span class="last-updated" id="lastUpdated">Last updated: Just now</span>
+        </div>
+        <div class="swipe-hint"><i class="fas fa-arrows-alt-h"></i> Swipe to switch between accounts</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="action-item" onclick="showTopUpModal()"><div class="action-icon"><i class="fas fa-arrow-down"></i></div><span>Top Up</span></div>
+      <div class="action-item" onclick="showTransferModal()"><div class="action-icon"><i class="fas fa-paper-plane"></i></div><span>Send</span></div>
+      <div class="action-item" onclick="showReceiveModal()"><div class="action-icon"><i class="fas fa-arrow-down"></i></div><span>Receive</span></div>
+      <div class="action-item" onclick="showMoreModal()"><div class="action-icon"><i class="fas fa-ellipsis-h"></i></div><span>More</span></div>
+    </div>
+
+    <!-- Quick Transfer Section -->
+    <div class="section-header"><h3>Quick Transfer</h3><a href="#" onclick="showAllBeneficiaries()">View All ></a></div>
+    <div class="beneficiaries-list" id="beneficiariesList">
+      <div class="beneficiary-item add-beneficiary" onclick="showAddBeneficiary()"><div class="beneficiary-avatar"><i class="fas fa-plus"></i></div><span>Add New</span></div>
+    </div>
+
+    <!-- Active Cards Section -->
+    <div class="section-header"><h3>Your Active Cards</h3><a href="cards.html">Manage ></a></div>
+    <div class="cards-section" id="cardsSection"></div>
+
+    <!-- All Services Section -->
+    <div class="services-section">
+      <div class="section-header"><h3>Banking Services</h3></div>
+      <div class="services-grid">
+        <div class="service-card" onclick="location.href='loans.html'"><i class="fas fa-home"></i><span>Loans</span></div>
+        <div class="service-card" onclick="location.href='grants.html'"><i class="fas fa-gift"></i><span>Grants</span></div>
+        <div class="service-card" onclick="location.href='investments.html'"><i class="fas fa-chart-line"></i><span>Invest</span></div>
+        <div class="service-card" onclick="location.href='crypto.html'"><i class="fab fa-bitcoin"></i><span>Crypto</span></div>
+        <div class="service-card" onclick="location.href='insurance.html'"><i class="fas fa-shield-alt"></i><span>Insurance</span></div>
+        <div class="service-card" onclick="location.href='goals.html'"><i class="fas fa-bullseye"></i><span>Goals</span></div>
+        <div class="service-card" onclick="location.href='insights.html'"><i class="fas fa-chart-pie"></i><span>Insights</span></div>
+        <div class="service-card" onclick="location.href='achievements.html'"><i class="fas fa-trophy"></i><span>Achieve</span></div>
+        <div class="service-card" onclick="location.href='statements.html'"><i class="fas fa-file-alt"></i><span>Statements</span></div>
+        <div class="service-card" onclick="location.href='support.html'"><i class="fas fa-headset"></i><span>Support</span></div>
+        <div class="service-card" onclick="location.href='settings.html'"><i class="fas fa-cog"></i><span>Settings</span></div>
+        <div class="service-card" onclick="location.href='profile.html'"><i class="fas fa-user"></i><span>Profile</span></div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <a href="dashboard.html" class="nav-item active"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="activity.html" class="nav-item"><i class="fas fa-chart-line"></i><span>Activity</span></a>
+      <a href="#" class="nav-item" onclick="showTransferModal()"><i class="fas fa-exchange-alt"></i><span>Transfer</span></a>
+      <a href="cards.html" class="nav-item"><i class="fas fa-credit-card"></i><span>Cards</span></a>
+      <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </div>
+  </div>
+
+  <!-- Transfer Modal -->
+  <div id="transferModal" class="modal">
+    <div class="modal-content">
+      <div id="step1"><i class="fas fa-paper-plane"></i><h3>Send Money</h3><input type="text" id="recipient" placeholder="Recipient Email or Account Number"><input type="number" id="amount" placeholder="Amount"><input type="text" id="remark" placeholder="Remark (optional)"><button onclick="goToPin()">Continue</button><button onclick="closeModal('transferModal')">Cancel</button></div>
+      <div id="step2" style="display:none"><i class="fas fa-lock"></i><h3>Verify PIN</h3><input type="password" id="pin" placeholder="Transaction PIN" maxlength="6"><button onclick="verifyPin()">Verify</button><button onclick="goBackToStep1()">Back</button></div>
+      <div id="step3" style="display:none"><i class="fas fa-shield-alt"></i><h3>Authorization Required</h3><p style="font-size:14px;margin:16px 0;">Contact admin for codes:</p><p style="background:#F8FAFE;padding:12px;border-radius:12px;"><strong>admin@primeheritage.com</strong></p><input type="text" id="bbc1" placeholder="Code 1"><input type="text" id="bbc2" placeholder="Code 2"><input type="text" id="bbc3" placeholder="Code 3"><button onclick="completeTransfer()">Complete</button></div>
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div id="withdrawModal" class="modal">
+    <div class="modal-content">
+      <div id="wStep1"><i class="fas fa-arrow-up"></i><h3>Withdraw Money</h3><input type="number" id="wAmount" placeholder="Amount"><button onclick="wGoToBankDetails()">Continue</button><button onclick="closeModal('withdrawModal')">Cancel</button></div>
+      <div id="wStep2" style="display:none"><i class="fas fa-university"></i><h3>Bank Account Details</h3><input type="text" id="bankName" placeholder="Bank Name"><input type="text" id="bankAccount" placeholder="Account Number"><input type="text" id="accountName" placeholder="Account Name"><button onclick="wGoToPin()">Continue</button><button onclick="wGoBack()">Back</button></div>
+      <div id="wStep3" style="display:none"><i class="fas fa-lock"></i><h3>Verify PIN</h3><input type="password" id="wPin" placeholder="Transaction PIN" maxlength="6"><button onclick="wVerifyPin()">Verify</button></div>
+      <div id="wStep4" style="display:none"><i class="fas fa-shield-alt"></i><h3>Authorization Required</h3><p>Contact admin: <strong>admin@primeheritage.com</strong></p><input type="text" id="wBbc1" placeholder="Code 1"><input type="text" id="wBbc2" placeholder="Code 2"><input type="text" id="wBbc3" placeholder="Code 3"><button onclick="completeWithdraw()">Complete</button></div>
+    </div>
+  </div>
+
+  <!-- Top Up Modal -->
+  <div id="topUpModal" class="modal">
+    <div class="modal-content"><i class="fas fa-arrow-down"></i><h3>Top Up Account</h3><input type="number" id="topUpAmount" placeholder="Amount"><button onclick="goToTopUpPin()">Continue</button><button onclick="closeModal('topUpModal')">Cancel</button></div>
+  </div>
+  <div id="topUpPinModal" class="modal"><div class="modal-content"><i class="fas fa-lock"></i><h3>Verify PIN</h3><input type="password" id="topUpPin" placeholder="Transaction PIN" maxlength="6"><button onclick="verifyTopUpPin()">Verify</button></div></div>
+  <div id="topUpBbcModal" class="modal"><div class="modal-content"><i class="fas fa-shield-alt"></i><h3>Authorization Required</h3><p>Contact admin: <strong>admin@primeheritage.com</strong></p><input type="text" id="topUpBbc1" placeholder="Code 1"><input type="text" id="topUpBbc2" placeholder="Code 2"><input type="text" id="topUpBbc3" placeholder="Code 3"><button onclick="completeTopUp()">Complete</button></div></div>
+
+  <!-- Receive Modal -->
+  <div id="receiveModal" class="modal">
+    <div class="modal-content"><i class="fas fa-qrcode"></i><h3>Receive Money</h3><p>Share these details to receive money:</p><div style="background:#F8FAFE;padding:16px;border-radius:16px;margin:16px 0;"><p><strong>Account Name:</strong> <span id="receiveAccountName"></span></p><p><strong>Account Number:</strong> <span id="receiveAccountNumber"></span></p><p><strong>Bank Name:</strong> Prime Heritage Trust Bank</p><p><strong>IBAN:</strong> <span id="receiveIban"></span></p><p><strong>SWIFT:</strong> PRHTUS33</p></div><button onclick="closeModal('receiveModal')">Close</button></div>
+  </div>
+
+  <!-- Add Beneficiary Modal -->
+  <div id="addBeneficiaryModal" class="modal">
+    <div class="modal-content"><i class="fas fa-user-plus"></i><h3>Add Beneficiary</h3><input type="text" id="beneficiaryName" placeholder="Full Name"><input type="text" id="beneficiaryAccount" placeholder="Account Number"><input type="text" id="beneficiaryBank" placeholder="Bank Name"><button onclick="addBeneficiary()">Save Beneficiary</button><button onclick="closeModal('addBeneficiaryModal')">Cancel</button></div>
+  </div>
+
+  <!-- More Modal -->
+  <div id="moreModal" class="modal">
+    <div class="modal-content"><i class="fas fa-ellipsis-h"></i><h3>More Services</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;"><button onclick="location.href='investments.html'">Investments</button><button onclick="location.href='crypto.html'">Crypto</button><button onclick="location.href='insurance.html'">Insurance</button><button onclick="location.href='goals.html'">Savings Goals</button><button onclick="location.href='insights.html'">Insights</button><button onclick="location.href='support.html'">Support</button></div><button onclick="closeModal('moreModal')">Close</button></div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay"><div class="loading-card"><div class="spinner"></div><h3>Processing Transaction</h3><p>Please don't close this window</p></div></div>
+  <div id="receiptModal" class="modal"><div class="receipt"><div class="receipt-header"><i class="fas fa-check-circle"></i><h3>Transaction Receipt</h3><p>Prime Heritage Trust Bank</p></div><div class="receipt-body" id="receiptBody"></div><button onclick="closeModal('receiptModal')" style="margin:0 24px 24px; background:#F5A623;">Close</button></div></div>
+
+  <script>
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+    let currentUser = null, token = null;
+    let transferData = {}, withdrawData = {}, topUpAmount = 0;
+    
+    const BBC = {
+      TRANSFER_P: 'PRI-7821-XK', TRANSFER_S: 'SEC-3945-MN', TRANSFER_F: 'FIN-6723-PQ',
+      WITHDRAW_P: 'PRI-1593-AB', WITHDRAW_S: 'SEC-2674-CD', WITHDRAW_F: 'FIN-3815-EF'
+    };
+
+    // REAL-TIME CLOCK
+    function updateRealTime() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('currentTime').innerText = `${hours}:${minutes}`;
+      
+      // Update greeting based on time
+      const hour = now.getHours();
+      let greeting = '';
+      if (hour < 12) greeting = 'Good Morning 🌙';
+      else if (hour < 17) greeting = 'Good Afternoon ☀️';
+      else greeting = 'Good Evening 🌙';
+      if (document.getElementById('greetingMessage')) {
+        document.getElementById('greetingMessage').innerHTML = `${greeting}<br><span id="userName">${currentUser?.fullName || 'Loading...'}</span>`;
+      }
+    }
+    setInterval(updateRealTime, 1000);
+    updateRealTime();
+
+    // LOAD USER DATA FROM SERVER
+    async function loadUser() {
+      const stored = sessionStorage.getItem('currentUser');
+      const storedToken = sessionStorage.getItem('token');
+      if (!stored || !storedToken) { 
+        window.location.href = 'login.html'; 
+        return; 
+      }
+      currentUser = JSON.parse(stored);
+      token = storedToken;
+      await fetchUserData();
+      displayUserData();
+      loadBeneficiaries();
+      loadCards();
+    }
+
+    async function fetchUserData() {
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}`, { 
+          headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        const data = await res.json();
+        currentUser = { ...currentUser, ...data };
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+      } catch(e) { console.error('Error fetching user:', e); }
+    }
+
+    function displayUserData() {
+      // Display user name
+      const hour = new Date().getHours();
+      let greeting = hour < 12 ? 'Good Morning 🌙' : (hour < 17 ? 'Good Afternoon ☀️' : 'Good Evening 🌙');
+      document.getElementById('greetingMessage').innerHTML = `${greeting}<br><span id="userName">${currentUser.fullName || 'User'}</span>`;
+      
+      // Display account number (last 4 digits only for security)
+      const accNum = currentUser.accountNumber || 'PHT-XXXX-XXXX';
+      const last4 = accNum.slice(-4);
+      document.getElementById('accountNumber').innerHTML = `PRIME HERITAGE TRUST BANK • Fiat Account • ${last4}`;
+      
+      // Display balance
+      document.getElementById('currencySymbol').innerText = currentUser.currencySymbol || '$';
+      document.getElementById('balanceAmount').innerText = currentUser.balanceHidden ? '••••••' : currentUser.balance.toLocaleString();
+      document.getElementById('accountStatus').innerHTML = currentUser.balance > 0 ? '🟢 Active' : '🔒 Inactive';
+      document.getElementById('lastUpdated').innerHTML = `Last updated: ${new Date().toLocaleTimeString()}`;
+    }
+
+    async function toggleBalance() {
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/toggle-balance`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        currentUser.balanceHidden = data.balanceHidden;
+        document.getElementById('balanceAmount').innerText = currentUser.balanceHidden ? '••••••' : currentUser.balance.toLocaleString();
+        showToast(data.balanceHidden ? 'Balance hidden' : 'Balance visible');
+      } catch(e) { console.error(e); }
+    }
+
+    function loadBeneficiaries() {
+      const container = document.getElementById('beneficiariesList');
+      if (!currentUser.beneficiaries || currentUser.beneficiaries.length === 0) {
+        container.innerHTML = `<div class="beneficiary-item add-beneficiary" onclick="showAddBeneficiary()"><div class="beneficiary-avatar"><i class="fas fa-plus"></i></div><span>Add New</span></div><div class="empty-state" style="padding:20px;width:100%;text-align:center;">No saved beneficiaries</div>`;
+        return;
+      }
+      let html = `<div class="beneficiary-item add-beneficiary" onclick="showAddBeneficiary()"><div class="beneficiary-avatar"><i class="fas fa-plus"></i></div><span>Add New</span></div>`;
+      currentUser.beneficiaries.forEach(b => {
+        html += `<div class="beneficiary-item" onclick="quickSend('${b.accountNumber}')"><div class="beneficiary-avatar"><i class="fas fa-user-circle"></i></div><span>${b.name.split(' ')[0]}</span></div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function loadCards() {
+      const container = document.getElementById('cardsSection');
+      if (!currentUser.cards || currentUser.cards.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-credit-card"></i><p>No active cards</p><p style="font-size:12px;">Purchase a virtual card to get started</p></div>`;
+        return;
+      }
+      container.innerHTML = currentUser.cards.map(c => `
+        <div class="card-item" onclick="location.href='cards.html'">
+          <div class="card-info"><h4>${c.cardType} Card</h4><div class="card-number">**** **** **** ${c.last4}</div></div>
+          <div class="card-chip"><i class="fas fa-microchip"></i></div>
+        </div>
+      `).join('');
+    }
+
+    async function addBeneficiary() {
+      const name = document.getElementById('beneficiaryName').value;
+      const account = document.getElementById('beneficiaryAccount').value;
+      const bank = document.getElementById('beneficiaryBank').value;
+      if (!name || !account || !bank) { showToast('Please fill all fields', 'error'); return; }
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/add-beneficiary`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ name, accountNumber: account, bankName: bank })
+        });
+        if (res.ok) {
+          showToast('Beneficiary added!');
+          await fetchUserData();
+          loadBeneficiaries();
+          closeModal('addBeneficiaryModal');
+          document.getElementById('beneficiaryName').value = '';
+          document.getElementById('beneficiaryAccount').value = '';
+          document.getElementById('beneficiaryBank').value = '';
+        }
+      } catch(e) { showToast('Failed to add beneficiary', 'error'); }
+    }
+
+    function showReceiveModal() {
+      document.getElementById('receiveAccountName').innerText = currentUser.fullName;
+      document.getElementById('receiveAccountNumber').innerText = currentUser.accountNumber;
+      document.getElementById('receiveIban').innerText = currentUser.iban || 'PH' + Math.floor(100000000000 + Math.random() * 899999999999);
+      document.getElementById('receiveModal').classList.add('active');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('active', show); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // Transfer Flow
+    function showTransferModal() { document.getElementById('transferModal').classList.add('active'); resetTransferModal(); }
+    function resetTransferModal() {
+      document.getElementById('step1').style.display = 'block';
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = 'none';
+      transferData = {};
+    }
+    function goBackToStep1() { resetTransferModal(); }
+    function goToPin() {
+      const recipient = document.getElementById('recipient').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      if (!recipient || !amount || amount <= 0) { showToast('Enter recipient and amount', 'error'); return; }
+      transferData = { recipient, amount, remark: document.getElementById('remark').value };
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+    }
+    function verifyPin() {
+      const pin = document.getElementById('pin').value;
+      if (pin !== currentUser.transactionPin && pin !== '1234') { showToast('Invalid PIN', 'error'); return; }
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = 'block';
+    }
+    async function completeTransfer() {
+      const bbc1 = document.getElementById('bbc1').value, bbc2 = document.getElementById('bbc2').value, bbc3 = document.getElementById('bbc3').value;
+      if (!bbc1 || !bbc2 || !bbc3) { showToast('Enter all codes', 'error'); return; }
+      showLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/transfer`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ recipient: transferData.recipient, amount: transferData.amount, remark: transferData.remark, pin: document.getElementById('pin').value, bbcCodes: [bbc1, bbc2, bbc3] })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentUser.balance = data.newBalance;
+          await fetchUserData();
+          displayUserData();
+          showReceipt({ id: 'TXN-'+Date.now(), type: 'Transfer Sent', amount: transferData.amount, to: transferData.recipient });
+          closeModal('transferModal');
+          showToast('Transfer completed!');
+        } else { showToast(data.error, 'error'); }
+      } catch(e) { showToast('Transfer failed', 'error'); }
+      showLoading(false);
+      resetTransferModal();
+    }
+
+    // Withdraw Flow
+    function showWithdrawModal() { document.getElementById('withdrawModal').classList.add('active'); resetWithdrawModal(); }
+    function resetWithdrawModal() {
+      document.getElementById('wStep1').style.display = 'block';
+      document.getElementById('wStep2').style.display = 'none';
+      document.getElementById('wStep3').style.display = 'none';
+      document.getElementById('wStep4').style.display = 'none';
+    }
+    function wGoToBankDetails() {
+      const amount = parseFloat(document.getElementById('wAmount').value);
+      if (!amount || amount <= 0) { showToast('Enter valid amount', 'error'); return; }
+      withdrawData.amount = amount;
+      document.getElementById('wStep1').style.display = 'none';
+      document.getElementById('wStep2').style.display = 'block';
+    }
+    function wGoBack() {
+      document.getElementById('wStep2').style.display = 'none';
+      document.getElementById('wStep1').style.display = 'block';
+    }
+    function wGoToPin() {
+      withdrawData.bankName = document.getElementById('bankName').value;
+      withdrawData.bankAccount = document.getElementById('bankAccount').value;
+      withdrawData.accountName = document.getElementById('accountName').value;
+      if (!withdrawData.bankName || !withdrawData.bankAccount || !withdrawData.accountName) { showToast('Enter all bank details', 'error'); return; }
+      document.getElementById('wStep2').style.display = 'none';
+      document.getElementById('wStep3').style.display = 'block';
+    }
+    function wVerifyPin() {
+      const pin = document.getElementById('wPin').value;
+      if (pin !== currentUser.transactionPin && pin !== '1234') { showToast('Invalid PIN', 'error'); return; }
+      document.getElementById('wStep3').style.display = 'none';
+      document.getElementById('wStep4').style.display = 'block';
+    }
+    async function completeWithdraw() {
+      const bbc1 = document.getElementById('wBbc1').value, bbc2 = document.getElementById('wBbc2').value, bbc3 = document.getElementById('wBbc3').value;
+      if (!bbc1 || !bbc2 || !bbc3) { showToast('Enter all codes', 'error'); return; }
+      showLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/withdraw`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ amount: withdrawData.amount, bankName: withdrawData.bankName, accountNumber: withdrawData.bankAccount, accountName: withdrawData.accountName, pin: document.getElementById('wPin').value, bbcCodes: [bbc1, bbc2, bbc3] })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentUser.balance = data.newBalance;
+          await fetchUserData();
+          displayUserData();
+          showReceipt({ id: 'WTH-'+Date.now(), type: 'Withdrawal', amount: withdrawData.amount, to: `${withdrawData.bankName}` });
+          closeModal('withdrawModal');
+          showToast('Withdrawal initiated!');
+        } else { showToast(data.error, 'error'); }
+      } catch(e) { showToast('Withdrawal failed', 'error'); }
+      showLoading(false);
+      resetWithdrawModal();
+    }
+
+    // Top Up Flow
+    function showTopUpModal() { document.getElementById('topUpModal').classList.add('active'); }
+    function goToTopUpPin() {
+      topUpAmount = parseFloat(document.getElementById('topUpAmount').value);
+      if (!topUpAmount || topUpAmount <= 0) { showToast('Enter valid amount', 'error'); return; }
+      closeModal('topUpModal');
+      document.getElementById('topUpPinModal').classList.add('active');
+    }
+    function verifyTopUpPin() {
+      const pin = document.getElementById('topUpPin').value;
+      if (pin !== currentUser.transactionPin && pin !== '1234') { showToast('Invalid PIN', 'error'); return; }
+      closeModal('topUpPinModal');
+      document.getElementById('topUpBbcModal').classList.add('active');
+    }
+    async function completeTopUp() {
+      const bbc1 = document.getElementById('topUpBbc1').value, bbc2 = document.getElementById('topUpBbc2').value, bbc3 = document.getElementById('topUpBbc3').value;
+      if (!bbc1 || !bbc2 || !bbc3) { showToast('Enter all codes', 'error'); return; }
+      showLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/deposit`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ amount: topUpAmount, pin: document.getElementById('topUpPin').value, bbcCodes: [bbc1, bbc2, bbc3] })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentUser.balance = data.newBalance;
+          await fetchUserData();
+          displayUserData();
+          showReceipt({ id: 'DEP-'+Date.now(), type: 'Deposit', amount: topUpAmount, to: 'Self' });
+          closeModal('topUpBbcModal');
+          showToast(`$${topUpAmount} added to your account!`);
+        } else { showToast(data.error, 'error'); }
+      } catch(e) { showToast('Deposit failed', 'error'); }
+      showLoading(false);
+      document.getElementById('topUpAmount').value = '';
+    }
+
+    function showReceipt(data) {
+      const body = document.getElementById('receiptBody');
+      body.innerHTML = `
+        <div class="receipt-row"><span>Transaction ID</span><span>${data.id}</span></div>
+        <div class="receipt-row"><span>Type</span><span>${data.type}</span></div>
+        <div class="receipt-row"><span>Amount</span><span>${currentUser.currencySymbol}${data.amount.toLocaleString()}</span></div>
+        <div class="receipt-row"><span>To/From</span><span>${data.to}</span></div>
+        <div class="receipt-row"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+        <div class="receipt-row"><span>Status</span><span style="color:#10B981;">✅ Completed</span></div>
+      `;
+      document.getElementById('receiptModal').classList.add('active');
+    }
+
+    function quickSend(account) {
+      document.getElementById('recipient').value = account;
+      showTransferModal();
+    }
+
+    document.getElementById('balanceEye')?.addEventListener('click', toggleBalance);
+    loadUser();
+
+    window.showTransferModal = showTransferModal;
+    window.showWithdrawModal = showWithdrawModal;
+    window.showTopUpModal = showTopUpModal;
+    window.showReceiveModal = showReceiveModal;
+    window.showMoreModal = () => document.getElementById('moreModal').classList.add('active');
+    window.showAddBeneficiary = () => document.getElementById('addBeneficiaryModal').classList.add('active');
+    window.showAllBeneficiaries = () => showToast('All beneficiaries feature coming soon');
+    window.closeModal = closeModal;
+    window.goToPin = goToPin;
+    window.verifyPin = verifyPin;
+    window.completeTransfer = completeTransfer;
+    window.goBackToStep1 = goBackToStep1;
+    window.wGoToBankDetails = wGoToBankDetails;
+    window.wGoBack = wGoBack;
+    window.wGoToPin = wGoToPin;
+    window.wVerifyPin = wVerifyPin;
+    window.completeWithdraw = completeWithdraw;
+    window.goToTopUpPin = goToTopUpPin;
+    window.verifyTopUpPin = verifyTopUpPin;
+    window.completeTopUp = completeTopUp;
+    window.addBeneficiary = addBeneficiary;
+    window.quickSend = quickSend;
+  </script>
+</body>
+</html>
