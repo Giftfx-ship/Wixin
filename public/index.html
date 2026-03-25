@@ -1,83 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Prime Heritage Trust | Global Digital Banking</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #0A2540; overflow-x: hidden; }
-    .landing { min-height: 100vh; background: linear-gradient(135deg, #0A2540 0%, #1F4A6E 100%); position: relative; overflow: hidden; }
-    .bg-animation { position: absolute; width: 100%; height: 100%; overflow: hidden; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(80px); animation: floatAnim 20s infinite; }
-    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(245,166,35,0.2), transparent); top: -200px; right: -150px; }
-    .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,255,255,0.08), transparent); bottom: -150px; left: -100px; animation-delay: -7s; }
-    @keyframes floatAnim { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(40px,-40px) scale(1.1);} }
-    nav { display: flex; justify-content: space-between; align-items: center; padding: 24px 60px; position: relative; z-index: 10; }
-    .logo { display: flex; align-items: center; gap: 14px; }
-    .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg,#F5A623,#FFD966); border-radius: 18px; display: flex; align-items: center; justify-content: center; }
-    .logo-icon i { font-size: 26px; color: #0A2540; }
-    .logo-text h1 { color: white; font-size: 22px; font-weight: 800; }
-    .logo-text p { color: rgba(255,255,255,0.6); font-size: 10px; }
-    .nav-links { display: flex; gap: 40px; align-items: center; }
-    .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-weight: 500; transition: 0.3s; }
-    .nav-links a:hover { color: #F5A623; }
-    .btn-outline { background: transparent; border: 2px solid rgba(245,166,35,0.5); padding: 10px 28px; border-radius: 50px; color: white; font-weight: 600; }
-    .hero { display: flex; justify-content: space-between; align-items: center; padding: 60px 60px; position: relative; z-index: 10; }
-    .hero-content { max-width: 550px; }
-    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 40px; margin-bottom: 24px; color: white; }
-    h1 { font-size: 56px; font-weight: 800; color: white; line-height: 1.2; margin-bottom: 24px; }
-    .gradient-text { background: linear-gradient(135deg, #F5A623, #FFD966); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .hero p { color: rgba(255,255,255,0.8); font-size: 18px; line-height: 1.6; margin-bottom: 32px; }
-    .btn-group { display: flex; gap: 16px; }
-    .btn-primary { background: #F5A623; color: #0A2540; padding: 14px 32px; border-radius: 40px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-    .btn-primary:hover { background: #FFB84D; transform: translateY(-2px); }
-    .btn-secondary { background: transparent; border: 2px solid rgba(255,255,255,0.3); padding: 14px 32px; border-radius: 40px; color: white; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-    .floating-cards { position: relative; }
-    .floating-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 24px; border-radius: 28px; width: 260px; text-align: center; color: white; animation: floatCard 4s ease-in-out infinite; }
-    .floating-card-2 { margin-top: 30px; margin-left: 40px; animation-delay: 2s; }
-    @keyframes floatCard { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
-    .floating-card i { font-size: 48px; color: #F5A623; margin-bottom: 16px; }
-    .features { background: white; padding: 80px 48px; border-radius: 48px 48px 0 0; }
-    .section-title { text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 48px; color: #0A2540; }
-    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-    .feature-card { text-align: center; padding: 32px 24px; background: #F8FAFE; border-radius: 24px; transition: 0.3s; }
-    .feature-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
-    .feature-card i { font-size: 48px; color: #F5A623; margin-bottom: 20px; }
-    .feature-card h3 { font-size: 20px; margin-bottom: 12px; }
-    .feature-card p { color: #6B7A8A; line-height: 1.5; }
-    footer { background: #0A2540; padding: 40px; text-align: center; color: rgba(255,255,255,0.6); }
-    @media (max-width: 768px) { nav { padding: 20px; } .hero { flex-direction: column; text-align: center; padding: 40px 20px; } h1 { font-size: 40px; } .features-grid { grid-template-columns: 1fr; } .features { padding: 40px 20px; } .floating-cards { display: none; } .btn-group { justify-content: center; } .nav-links { display: none; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prime Heritage Trust | Global Digital Banking</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter', sans-serif; background:#0A2540; overflow-x:hidden; }
+
+/* ================= PRELOADER ================= */
+#preloader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #0A2540;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader-logo {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  background: linear-gradient(135deg,#F5A623,#FFD966);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.loader-logo i {
+  font-size: 32px;
+  color: #0A2540;
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.loading-bar {
+  margin-top: 20px;
+  width: 200px;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#F5A623,#FFD966);
+  animation: load 2.5s ease forwards;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes load {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Fade out */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+/* ================= MAIN SITE ================= */
+.landing { min-height:100vh; background:linear-gradient(135deg,#0A2540 0%,#1F4A6E 100%); position:relative; overflow:hidden; }
+
+.bg-animation { position:absolute; width:100%; height:100%; overflow:hidden; }
+
+.orb {
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  animation: floatAnim 20s infinite;
+}
+
+.orb-1 {
+  width:600px; height:600px;
+  background: radial-gradient(circle, rgba(245,166,35,0.2), transparent);
+  top:-200px; right:-150px;
+}
+
+.orb-2 {
+  width:500px; height:500px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08), transparent);
+  bottom:-150px; left:-100px;
+  animation-delay:-7s;
+}
+
+@keyframes floatAnim {
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(40px,-40px) scale(1.1);}
+}
+
+nav {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:24px 60px;
+  position:relative;
+  z-index:10;
+}
+
+.logo { display:flex; align-items:center; gap:14px; }
+
+.logo-icon {
+  width:50px; height:50px;
+  background: linear-gradient(135deg,#F5A623,#FFD966);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logo-icon i { font-size:26px; color:#0A2540; }
+
+.logo-text h1 { color:white; font-size:22px; font-weight:800; }
+.logo-text p { color:rgba(255,255,255,0.6); font-size:10px; }
+
+.nav-links { display:flex; gap:40px; align-items:center; }
+
+.nav-links a {
+  color:rgba(255,255,255,0.8);
+  text-decoration:none;
+  font-weight:500;
+  transition:0.3s;
+}
+
+.nav-links a:hover { color:#F5A623; }
+
+.btn-outline {
+  border:2px solid rgba(245,166,35,0.5);
+  padding:10px 28px;
+  border-radius:50px;
+  color:white;
+  font-weight:600;
+}
+
+/* HERO */
+.hero {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:60px;
+}
+
+.hero-content { max-width:550px; }
+
+h1 {
+  font-size:56px;
+  font-weight:800;
+  color:white;
+  margin-bottom:24px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg,#F5A623,#FFD966);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.hero p {
+  color:rgba(255,255,255,0.8);
+  font-size:18px;
+  margin-bottom:32px;
+}
+
+.btn-group { display:flex; gap:16px; }
+
+.btn-primary {
+  background:#F5A623;
+  color:#0A2540;
+  padding:14px 32px;
+  border-radius:40px;
+  font-weight:700;
+  text-decoration:none;
+}
+
+.btn-secondary {
+  border:2px solid rgba(255,255,255,0.3);
+  padding:14px 32px;
+  border-radius:40px;
+  color:white;
+  text-decoration:none;
+}
+
+/* FEATURES */
+.features {
+  background:white;
+  padding:80px 48px;
+  border-radius:48px 48px 0 0;
+}
+
+.section-title {
+  text-align:center;
+  font-size:36px;
+  margin-bottom:48px;
+}
+
+.features-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:32px;
+}
+
+.feature-card {
+  text-align:center;
+  padding:32px;
+  background:#F8FAFE;
+  border-radius:24px;
+  transition:0.3s;
+}
+
+.feature-card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.08);
+}
+
+footer {
+  background:#0A2540;
+  padding:40px;
+  text-align:center;
+  color:rgba(255,255,255,0.6);
+}
+
+/* MOBILE */
+@media (max-width:768px) {
+  .hero { flex-direction:column; text-align:center; }
+  h1 { font-size:40px; }
+  .features-grid { grid-template-columns:1fr; }
+}
+</style>
 </head>
+
 <body>
-  <div class="landing">
-    <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-    <nav>
-      <div class="logo"><div class="logo-icon"><i class="fas fa-crown"></i></div><div class="logo-text"><h1>PRIME HERITAGE</h1><p>TRUST BANK</p></div></div>
-      <div class="nav-links"><a href="#">Home</a><a href="#">Security</a><a href="support.html">Support</a><a href="login.html" class="btn-outline">Sign In</a></div>
-    </nav>
-    <div class="hero">
-      <div class="hero-content">
-        <div class="badge"><i class="fas fa-shield-alt"></i><span>Global Digital Banking</span></div>
-        <h1>Your Money, <span class="gradient-text">Your Way</span></h1>
-        <p>Premium digital banking with virtual cards, global transfers, and 24/7 support. Join thousands of satisfied customers worldwide.</p>
-        <div class="btn-group"><a href="signup.html" class="btn-primary"><i class="fas fa-user-plus"></i> Open Account</a><a href="login.html" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Sign In</a></div>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="loader-logo"><i class="fas fa-crown"></i></div>
+  <div class="loading-text">Securing your banking experience...</div>
+  <div class="loading-bar">
+    <div class="loading-progress"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="landing">
+  <div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <nav>
+    <div class="logo">
+      <div class="logo-icon"><i class="fas fa-crown"></i></div>
+      <div class="logo-text">
+        <h1>PRIME HERITAGE</h1>
+        <p>TRUST BANK</p>
       </div>
-      <div class="floating-cards"><div class="floating-card"><i class="fas fa-credit-card"></i><h4>Virtual Cards</h4><p>Instant digital cards</p></div><div class="floating-card floating-card-2"><i class="fas fa-globe"></i><h4>50+ Currencies</h4><p>USD, EUR, GBP & more</p></div></div>
+    </div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">Security</a>
+      <a href="#">Support</a>
+      <a href="#" class="btn-outline">Sign In</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Your Money, <span class="gradient-text">Your Way</span></h1>
+      <p>Premium digital banking with global transfers and virtual cards.</p>
+      <div class="btn-group">
+        <a href="#" class="btn-primary">Open Account</a>
+        <a href="#" class="btn-secondary">Sign In</a>
+      </div>
     </div>
   </div>
-  <div class="features">
-    <h2 class="section-title">Why Choose Us?</h2>
-    <div class="features-grid">
-      <div class="feature-card"><i class="fas fa-credit-card"></i><h3>Virtual Cards</h3><p>Purchase virtual cards for secure online shopping</p></div>
-      <div class="feature-card"><i class="fas fa-exchange-alt"></i><h3>Global Transfers</h3><p>Send money to any country instantly</p></div>
-      <div class="feature-card"><i class="fas fa-chart-line"></i><h3>Investments</h3><p>Stocks, crypto, and fixed deposits</p></div>
-      <div class="feature-card"><i class="fas fa-headset"></i><h3>24/7 Support</h3><p>Live chat and email support</p></div>
-    </div>
+</div>
+
+<div class="features">
+  <h2 class="section-title">Why Choose Us?</h2>
+  <div class="features-grid">
+    <div class="feature-card"><i class="fas fa-credit-card"></i><h3>Virtual Cards</h3></div>
+    <div class="feature-card"><i class="fas fa-exchange-alt"></i><h3>Global Transfers</h3></div>
+    <div class="feature-card"><i class="fas fa-chart-line"></i><h3>Investments</h3></div>
+    <div class="feature-card"><i class="fas fa-headset"></i><h3>24/7 Support</h3></div>
   </div>
-  <footer><p>©️ 2025 Prime Heritage Trust Bank. All rights reserved.</p><p style="margin-top:8px;">🔐 3-Layer BBC Security • 24/7 Global Support</p></footer>
+</div>
+
+<footer>
+  <p>© 2025 Prime Heritage Trust Bank</p>
+</footer>
+
+<!-- SCRIPT -->
+<script>
+window.addEventListener("load", function() {
+  const preloader = document.getElementById("preloader");
+  setTimeout(() => {
+    preloader.classList.add("fade-out");
+    setTimeout(() => {
+      preloader.style.display = "none";
+    }, 600);
+  }, 2200);
+});
+</script>
+
 </body>
 </html>
