@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Grants | Prime Heritage Trust</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F5F7FB; color: #1A2C3E; }
+    .app-container { max-width: 500px; margin: 0 auto; background: #FFFFFF; min-height: 100vh; padding-bottom: 80px; }
+    .page-header { background: #0A2540; padding: 30px 20px; color: white; border-radius: 0 0 32px 32px; }
+    .page-header a { color: white; font-size: 24px; text-decoration: none; }
+    .grant-types { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 20px; }
+    .grant-card { background: #F8FAFE; border-radius: 24px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid #E2E8F0; transition: 0.2s; }
+    .grant-card:hover { transform: translateY(-3px); background: #F5A623; color: white; }
+    .grant-card i { font-size: 40px; color: #F5A623; margin-bottom: 12px; display: block; }
+    .grant-form { padding: 20px; display: none; }
+    .grant-form.active { display: block; }
+    .my-grants { padding: 20px; }
+    .grant-item { background: #F8FAFE; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .btn-primary { background: #F5A623; color: #0A2540; padding: 14px; border: none; border-radius: 40px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 16px; }
+    .form-input { width: 100%; padding: 14px; border: 1px solid #E2E8F0; border-radius: 16px; margin-bottom: 12px; font-family: inherit; }
+    .bottom-nav { position: fixed; bottom: 0; max-width: 500px; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 20px 24px; border-top: 1px solid #E9EDF2; }
+    .nav-item { text-align: center; color: #9AA9B9; text-decoration: none; }
+    .nav-item.active { color: #F5A623; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #E2E8F0; border-top-color: #F5A623; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .modal.active { opacity: 1; visibility: visible; }
+    .modal-content { background: white; border-radius: 32px; padding: 32px; width: 90%; max-width: 380px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="page-header">
+      <a href="dashboard.html"><i class="fas fa-arrow-left"></i></a>
+      <h2>Grants</h2>
+      <p>No repayment required funding</p>
+    </div>
+    
+    <div class="grant-types">
+      <div class="grant-card" onclick="showGrantForm('Business')"><i class="fas fa-briefcase"></i><h3>Business Grant</h3><p>Up to $50,000</p></div>
+      <div class="grant-card" onclick="showGrantForm('Education')"><i class="fas fa-graduation-cap"></i><h3>Education Grant</h3><p>Up to $25,000</p></div>
+      <div class="grant-card" onclick="showGrantForm('Startup')"><i class="fas fa-rocket"></i><h3>Startup Grant</h3><p>Up to $100,000</p></div>
+      <div class="grant-card" onclick="showGrantForm('Community')"><i class="fas fa-hand-holding-heart"></i><h3>Community Grant</h3><p>Up to $75,000</p></div>
+    </div>
+    
+    <div id="grantFormContainer" class="grant-form">
+      <h3 id="grantTypeTitle"></h3>
+      <input type="number" id="grantAmount" placeholder="Amount Requested" class="form-input">
+      <textarea id="grantPurpose" rows="3" placeholder="Purpose of Grant" class="form-input"></textarea>
+      <textarea id="grantImpact" rows="3" placeholder="Expected Impact" class="form-input"></textarea>
+      <button onclick="applyGrant()" class="btn-primary">Submit Application</button>
+    </div>
+    
+    <div class="my-grants"><h3>My Grant Applications</h3><div id="myGrantsList"><div class="empty-state" style="text-align:center;padding:40px;"><i class="fas fa-inbox"></i><p>No grant applications</p></div></div></div>
+    
+    <div class="bottom-nav">
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="cards.html" class="nav-item"><i class="fas fa-credit-card"></i><span>Cards</span></a>
+      <a href="#" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transfer</span></a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </div>
+  </div>
+  
+  <div id="loadingModal" class="modal"><div class="modal-content"><div class="spinner"></div><p>Submitting application...</p></div></div>
+  
+  <script>
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+    let currentUser = null, token = null, selectedGrantType = '';
+    
+    async function loadUser() {
+      const stored = sessionStorage.getItem('currentUser');
+      const storedToken = sessionStorage.getItem('token');
+      if (!stored || !storedToken) { window.location.href = 'login.html'; return; }
+      currentUser = JSON.parse(stored);
+      token = storedToken;
+      await fetchUserData();
+      loadGrants();
+    }
+    async function fetchUserData() {
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        currentUser = { ...currentUser, ...data };
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+      } catch(e) {}
+    }
+    function loadGrants() {
+      const container = document.getElementById('myGrantsList');
+      if (!currentUser.grants || currentUser.grants.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px;"><i class="fas fa-inbox"></i><p>No grant applications</p></div>';
+        return;
+      }
+      container.innerHTML = currentUser.grants.map(g => `<div class="grant-item"><div><strong>${g.type} Grant</strong><br><small>$${g.amount.toLocaleString()}</small></div><div><span style="background:#F59E0B20;padding:4px 12px;border-radius:20px;">${g.status}</span><br><small>${new Date(g.appliedAt).toLocaleDateString()}</small></div></div>`).join('');
+    }
+    function showGrantForm(type) {
+      selectedGrantType = type;
+      document.getElementById('grantTypeTitle').innerHTML = `<i class="fas fa-${type === 'Business' ? 'briefcase' : type === 'Education' ? 'graduation-cap' : type === 'Startup' ? 'rocket' : 'hand-holding-heart'}"></i> ${type} Grant Application`;
+      document.getElementById('grantFormContainer').classList.add('active');
+    }
+    async function applyGrant() {
+      const amount = parseFloat(document.getElementById('grantAmount').value);
+      const purpose = document.getElementById('grantPurpose').value;
+      const impact = document.getElementById('grantImpact').value;
+      if (!amount || !purpose || !impact) { alert('Fill all fields'); return; }
+      document.getElementById('loadingModal').classList.add('active');
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/apply-grant`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ grantType: selectedGrantType, amount, purpose: `${purpose} - Impact: ${impact}` })
+        });
+        if (res.ok) { alert('✅ Grant application submitted!'); location.reload(); }
+        else { alert('Application failed'); }
+      } catch(e) { alert('Error'); }
+      document.getElementById('loadingModal').classList.remove('active');
+    }
+    loadUser();
+    window.showGrantForm = showGrantForm;
+    window.applyGrant = applyGrant;
+  </script>
+</body>
+</html>
