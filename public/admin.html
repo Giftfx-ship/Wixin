@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Admin Panel | Prime Heritage Trust</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F5F7FB; color: #1A2C3E; }
+    .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .admin-header { background: linear-gradient(135deg, #0A2540, #1F4A6E); padding: 30px; border-radius: 28px; color: white; margin-bottom: 24px; }
+    .admin-header h1 { font-size: 24px; margin-bottom: 8px; }
+    .admin-header p { opacity: 0.8; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+    .stat-card i { font-size: 32px; color: #F5A623; margin-bottom: 12px; }
+    .stat-number { font-size: 32px; font-weight: 800; color: #0A2540; }
+    .stat-label { font-size: 13px; color: #4A5568; margin-top: 4px; }
+    .admin-section { background: white; border-radius: 24px; padding: 24px; margin-bottom: 24px; border: 1px solid #E2E8F0; }
+    .admin-section h3 { margin-bottom: 20px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+    .bbc-box { background: #FEF9E3; border-radius: 16px; padding: 20px; margin: 16px 0; border-left: 4px solid #F5A623; }
+    .bbc-code { font-family: monospace; font-size: 18px; font-weight: 700; color: #F5A623; margin: 8px 0; letter-spacing: 1px; }
+    .user-list { max-height: 400px; overflow-y: auto; }
+    .user-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #E2E8F0; transition: 0.2s; }
+    .user-item:hover { background: #F8FAFE; }
+    .user-info h4 { font-size: 16px; margin-bottom: 4px; }
+    .user-info p { font-size: 12px; color: #4A5568; }
+    .btn-send { background: #F5A623; color: #0A2540; border: none; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .btn-send:hover { background: #FFB84D; transform: scale(1.02); }
+    .btn-primary { background: #F5A623; color: #0A2540; padding: 12px; border: none; border-radius: 40px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 16px; }
+    .form-input { width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 16px; margin-bottom: 12px; font-family: inherit; }
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .modal.active { opacity: 1; visibility: visible; }
+    .modal-content { background: white; border-radius: 32px; padding: 32px; width: 90%; max-width: 380px; text-align: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #E2E8F0; border-top-color: #F5A623; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1A2C3E; color: white; padding: 12px 24px; border-radius: 40px; z-index: 1100; animation: fadeUp 0.3s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .logout-btn { background: #EF4444; color: white; margin-top: 16px; }
+    .logout-btn:hover { background: #DC2626; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1><i class="fas fa-crown"></i> Admin Control Panel</h1>
+      <p>Manage users, send money, view BBC codes</p>
+    </div>
+    
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><i class="fas fa-users"></i><div class="stat-number" id="totalUsers">0</div><div class="stat-label">Total Users</div></div>
+      <div class="stat-card"><i class="fas fa-credit-card"></i><div class="stat-number" id="totalCards">0</div><div class="stat-label">Cards Issued</div></div>
+      <div class="stat-card"><i class="fas fa-dollar-sign"></i><div class="stat-number" id="totalVolume">$0</div><div class="stat-label">Total Volume</div></div>
+    </div>
+    
+    <div class="admin-section">
+      <h3><i class="fas fa-paper-plane"></i> Send Money to Any User</h3>
+      <p style="font-size: 13px; color: #4A5568; margin-bottom: 16px;">⚠️ No BBC code required - Admin privilege</p>
+      <input type="text" id="adminRecipient" placeholder="Recipient Email" class="form-input">
+      <input type="number" id="adminAmount" placeholder="Amount" class="form-input">
+      <select id="adminCurrency" class="form-input">
+        <option value="USD">USD - US Dollar</option>
+        <option value="EUR">EUR - Euro</option>
+        <option value="GBP">GBP - British Pound</option>
+        <option value="NGN">NGN - Nigerian Naira</option>
+      </select>
+      <input type="text" id="adminNote" placeholder="Note (appears in user's history)" class="form-input">
+      <button onclick="adminSendMoney()" class="btn-primary">Send Money</button>
+    </div>
+    
+    <div class="admin-section">
+      <h3><i class="fas fa-shield-alt"></i> BBC Codes (Only You Know)</h3>
+      <div class="bbc-box">
+        <p><strong>🔐 TRANSFER / SEND MONEY:</strong></p>
+        <div class="bbc-code">PRI-7821-XK</div>
+        <div class="bbc-code">SEC-3945-MN</div>
+        <div class="bbc-code">FIN-6723-PQ</div>
+        <hr style="margin: 12px 0; border-color: #E2E8F0;">
+        <p><strong>💸 WITHDRAW MONEY:</strong></p>
+        <div class="bbc-code">PRI-1593-AB</div>
+        <div class="bbc-code">SEC-2674-CD</div>
+        <div class="bbc-code">FIN-3815-EF</div>
+        <hr style="margin: 12px 0; border-color: #E2E8F0;">
+        <p><strong>💳 CARD PURCHASE:</strong></p>
+        <div class="bbc-code">PRI-8642-GH</div>
+        <div class="bbc-code">SEC-9753-IJ</div>
+        <div class="bbc-code">FIN-6428-KL</div>
+        <hr style="margin: 12px 0; border-color: #E2E8F0;">
+        <p><strong>💡 BILL PAYMENT:</strong></p>
+        <div class="bbc-code">PRI-3214-MN</div>
+        <div class="bbc-code">SEC-5432-OP</div>
+        <div class="bbc-code">FIN-7654-QR</div>
+      </div>
+      <p style="font-size: 12px; color: #4A5568; margin-top: 12px;"><i class="fas fa-info-circle"></i> Users must contact you to get these codes for their transactions</p>
+    </div>
+    
+    <div class="admin-section">
+      <h3><i class="fas fa-users"></i> All Users</h3>
+      <div id="userList" class="user-list"></div>
+    </div>
+    
+    <div class="admin-section">
+      <button onclick="logout()" class="btn-primary logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+  
+  <div id="loadingModal" class="modal"><div class="modal-content"><div class="spinner"></div><p>Processing...</p></div></div>
+  
+  <script>
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+    let currentUser = null;
+    let token = null;
+    
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    async function loadAdmin() {
+      const stored = sessionStorage.getItem('currentUser');
+      const storedToken = sessionStorage.getItem('token');
+      if (!stored || !storedToken) {
+        window.location.href = 'login.html';
+        return;
+      }
+      currentUser = JSON.parse(stored);
+      token = storedToken;
+      
+      if (!currentUser.isAdmin) {
+        showToast('Access denied. Admin only.');
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        return;
+      }
+      
+      await loadStats();
+      await loadUsers();
+    }
+    
+    async function loadStats() {
+      try {
+        const res = await fetch(`${API_URL}/admin/stats`);
+        const data = await res.json();
+        document.getElementById('totalUsers').innerText = data.totalUsers || 0;
+        document.getElementById('totalCards').innerText = data.totalCards || 0;
+        document.getElementById('totalVolume').innerText = `$${data.totalBalance?.toLocaleString() || 0}`;
+      } catch(e) { console.error(e); }
+    }
+    
+    async function loadUsers() {
+      try {
+        const res = await fetch(`${API_URL}/admin/users`);
+        const users = await res.json();
+        const regularUsers = users.filter(u => !u.isAdmin);
+        const container = document.getElementById('userList');
+        
+        if (regularUsers.length === 0) {
+          container.innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-inbox"></i><p>No users yet</p></div>';
+          return;
+        }
+        
+        container.innerHTML = regularUsers.map(u => `
+          <div class="user-item">
+            <div class="user-info">
+              <h4>${u.fullName}</h4>
+              <p>${u.email} | Balance: ${u.currencySymbol}${u.balance.toLocaleString()}</p>
+              <p style="font-size: 10px;">Joined: ${new Date(u.createdAt).toLocaleDateString()}</p>
+            </div>
+            <button onclick="quickSend('${u.email}')" class="btn-send">Send</button>
+          </div>
+        `).join('');
+      } catch(e) { console.error(e); }
+    }
+    
+    async function adminSendMoney() {
+      const recipient = document.getElementById('adminRecipient').value;
+      const amount = parseFloat(document.getElementById('adminAmount').value);
+      const currency = document.getElementById('adminCurrency').value;
+      const note = document.getElementById('adminNote').value || 'Bank Credit';
+      
+      if (!recipient || !amount || amount <= 0) {
+        showToast('Please enter recipient and valid amount');
+        return;
+      }
+      
+      document.getElementById('loadingModal').classList.add('active');
+      
+      try {
+        const res = await fetch(`${API_URL}/admin/send-money`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipientEmail: recipient, amount, note })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          showToast(`✅ Sent ${currency === 'USD' ? '$' : currency === 'EUR' ? '€' : '£'}${amount.toLocaleString()} to ${recipient}`);
+          document.getElementById('adminRecipient').value = '';
+          document.getElementById('adminAmount').value = '';
+          document.getElementById('adminNote').value = '';
+          await loadStats();
+          await loadUsers();
+        } else {
+          showToast(data.error || 'Failed to send money');
+        }
+      } catch(e) {
+        showToast('Error sending money');
+      }
+      
+      document.getElementById('loadingModal').classList.remove('active');
+    }
+    
+    function quickSend(email) {
+      document.getElementById('adminRecipient').value = email;
+      document.getElementById('adminAmount').focus();
+      showToast(`Ready to send to ${email}`);
+    }
+    
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+      }
+    }
+    
+    loadAdmin();
+    
+    window.adminSendMoney = adminSendMoney;
+    window.quickSend = quickSend;
+    window.logout = logout;
+  </script>
+</body>
+</html>
