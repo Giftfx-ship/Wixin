@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Profile | Prime Heritage Trust</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F5F7FB; color: #1A2C3E; }
+    .app-container { max-width: 500px; margin: 0 auto; background: #FFFFFF; min-height: 100vh; padding-bottom: 80px; }
+    .page-header { background: #0A2540; padding: 40px 20px; text-align: center; color: white; border-radius: 0 0 32px 32px; }
+    .page-header a { position: absolute; left: 20px; top: 40px; color: white; font-size: 24px; text-decoration: none; }
+    .avatar { width: 80px; height: 80px; background: #F5A623; border-radius: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 40px; color: #0A2540; }
+    .profile-info { padding: 20px; }
+    .info-card { background: #F8FAFE; border-radius: 24px; padding: 20px; margin-bottom: 20px; border: 1px solid #E2E8F0; }
+    .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #E2E8F0; }
+    .info-row:last-child { border-bottom: none; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+    .stat-box { text-align: center; padding: 12px; background: #F8FAFE; border-radius: 16px; }
+    .stat-number { font-size: 24px; font-weight: 800; color: #F5A623; }
+    .badge { display: inline-block; background: #F5A62320; padding: 4px 12px; border-radius: 20px; font-size: 11px; margin: 4px; }
+    .bottom-nav { position: fixed; bottom: 0; max-width: 500px; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 20px 24px; border-top: 1px solid #E9EDF2; }
+    .nav-item { text-align: center; color: #9AA9B9; text-decoration: none; }
+    .nav-item.active { color: #F5A623; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="page-header">
+      <a href="dashboard.html"><i class="fas fa-arrow-left"></i></a>
+      <div class="avatar"><i class="fas fa-user"></i></div>
+      <h2 id="profileName">John Doe</h2>
+      <p id="profileEmail">john@email.com</p>
+      <div class="badge" style="background:#10B98120; color:#10B981;"><i class="fas fa-check-circle"></i> Verified Account</div>
+    </div>
+    
+    <div class="profile-info">
+      <div class="info-card"><h3>Account Information</h3>
+        <div class="info-row"><span>Account Number</span><span id="accNumber">PHT-XXXX-XXXX</span></div>
+        <div class="info-row"><span>IBAN</span><span id="iban">PH**************</span></div>
+        <div class="info-row"><span>SWIFT/BIC</span><span id="swift">PRHTUS33</span></div>
+        <div class="info-row"><span>Account Type</span><span id="accType">Standard</span></div>
+        <div class="info-row"><span>Currency</span><span id="currency">USD</span></div>
+      </div>
+      
+      <div class="info-card"><h3>Account Statistics</h3>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-number" id="totalTx">0</div><div>Transactions</div></div>
+          <div class="stat-box"><div class="stat-number" id="totalSpent">$0</div><div>Spent</div></div>
+          <div class="stat-box"><div class="stat-number" id="totalReceived">$0</div><div>Received</div></div>
+        </div>
+      </div>
+      
+      <div class="info-card"><h3>Achievements</h3><div id="achievementsList"></div></div>
+    </div>
+    
+    <div class="bottom-nav">
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="cards.html" class="nav-item"><i class="fas fa-credit-card"></i><span>Cards</span></a>
+      <a href="#" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transfer</span></a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </div>
+  </div>
+  
+  <script>
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+    let currentUser = null, token = null;
+    async function loadUser() {
+      const stored = sessionStorage.getItem('currentUser');
+      const storedToken = sessionStorage.getItem('token');
+      if (!stored || !storedToken) { window.location.href = 'login.html'; return; }
+      currentUser = JSON.parse(stored);
+      token = storedToken;
+      await fetchUserData();
+      displayProfile();
+    }
+    async function fetchUserData() {
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        currentUser = { ...currentUser, ...data };
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+      } catch(e) {}
+    }
+    function displayProfile() {
+      document.getElementById('profileName').innerText = currentUser.fullName;
+      document.getElementById('profileEmail').innerText = currentUser.email;
+      document.getElementById('accNumber').innerText = currentUser.accountNumber;
+      document.getElementById('iban').innerText = currentUser.iban || 'PH' + Math.floor(100000000000 + Math.random() * 899999999999);
+      document.getElementById('swift').innerText = currentUser.swiftCode || 'PRHTUS33';
+      document.getElementById('accType').innerText = currentUser.accountType;
+      document.getElementById('currency').innerText = currentUser.currency;
+      
+      const tx = currentUser.transactions || [];
+      const totalSpent = tx.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+      const totalReceived = tx.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+      document.getElementById('totalTx').innerText = tx.length;
+      document.getElementById('totalSpent').innerHTML = `${currentUser.currencySymbol}${totalSpent.toLocaleString()}`;
+      document.getElementById('totalReceived').innerHTML = `${currentUser.currencySymbol}${totalReceived.toLocaleString()}`;
+      
+      const achievements = currentUser.achievements || [];
+      const container = document.getElementById('achievementsList');
+      if (achievements.length === 0) container.innerHTML = '<div class="badge"><i class="fas fa-crown"></i> Complete tasks to earn badges!</div>';
+      else container.innerHTML = achievements.map(a => `<div class="badge"><i class="fas ${a.icon || 'fa-trophy'}"></i> ${a.name}</div>`).join('');
+    }
+    loadUser();
+  </script>
+</body>
+</html>
