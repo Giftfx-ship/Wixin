@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Savings Goals | Prime Heritage Trust</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F5F7FB; color: #1A2C3E; }
+    .app-container { max-width: 500px; margin: 0 auto; background: #FFFFFF; min-height: 100vh; padding-bottom: 80px; }
+    .page-header { background: #0A2540; padding: 30px 20px; color: white; border-radius: 0 0 32px 32px; }
+    .page-header a { color: white; font-size: 24px; text-decoration: none; }
+    .create-goal { padding: 20px; background: #F8FAFE; margin: 20px; border-radius: 24px; }
+    .goal-list { padding: 20px; }
+    .goal-item { background: #F8FAFE; border-radius: 20px; padding: 20px; margin-bottom: 16px; border: 1px solid #E2E8F0; }
+    .progress-bar { width: 100%; height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; margin: 12px 0; }
+    .progress-fill { height: 100%; background: #F5A623; border-radius: 4px; transition: width 0.5s; }
+    .btn-primary { background: #F5A623; color: #0A2540; padding: 14px; border: none; border-radius: 40px; font-weight: 600; width: 100%; cursor: pointer; }
+    .form-input { width: 100%; padding: 14px; border: 1px solid #E2E8F0; border-radius: 16px; margin-bottom: 12px; font-family: inherit; }
+    .bottom-nav { position: fixed; bottom: 0; max-width: 500px; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 20px 24px; border-top: 1px solid #E9EDF2; }
+    .nav-item { text-align: center; color: #9AA9B9; text-decoration: none; }
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .modal.active { opacity: 1; visibility: visible; }
+    .modal-content { background: white; border-radius: 32px; padding: 32px; width: 90%; max-width: 380px; text-align: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #E2E8F0; border-top-color: #F5A623; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="page-header">
+      <a href="dashboard.html"><i class="fas fa-arrow-left"></i></a>
+      <h2>Savings Goals</h2>
+      <p>Save for what matters most</p>
+    </div>
+    
+    <div class="create-goal">
+      <h3>Create New Goal</h3>
+      <input type="text" id="goalName" placeholder="Goal Name (e.g., Vacation, New Car)" class="form-input">
+      <input type="number" id="goalTarget" placeholder="Target Amount" class="form-input">
+      <input type="date" id="goalDeadline" class="form-input">
+      <button onclick="createGoal()" class="btn-primary">Create Goal</button>
+    </div>
+    
+    <div class="goal-list"><h3>My Savings Goals</h3><div id="goalsList"></div></div>
+    
+    <div class="bottom-nav">
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="cards.html" class="nav-item"><i class="fas fa-credit-card"></i><span>Cards</span></a>
+      <a href="#" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Transfer</span></a>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </div>
+  </div>
+  
+  <div id="addModal" class="modal">
+    <div class="modal-content"><i class="fas fa-piggy-bank"></i><h3>Add to Goal</h3><input type="number" id="addAmount" placeholder="Amount"><button onclick="addToGoal()">Add Money</button><button onclick="closeModal('addModal')">Cancel</button></div>
+  </div>
+  <div id="loadingModal" class="modal"><div class="modal-content"><div class="spinner"></div><p>Processing...</p></div></div>
+  
+  <script>
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+    let currentUser = null, token = null, currentGoalId = null;
+    
+    async function loadUser() {
+      const stored = sessionStorage.getItem('currentUser');
+      const storedToken = sessionStorage.getItem('token');
+      if (!stored || !storedToken) { window.location.href = 'login.html'; return; }
+      currentUser = JSON.parse(stored);
+      token = storedToken;
+      await fetchUserData();
+      loadGoals();
+    }
+    async function fetchUserData() {
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        currentUser = { ...currentUser, ...data };
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+      } catch(e) {}
+    }
+    function loadGoals() {
+      const container = document.getElementById('goalsList');
+      if (!currentUser.goals || currentUser.goals.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px;"><i class="fas fa-bullseye"></i><p>No savings goals yet</p><p>Create your first goal!</p></div>';
+        return;
+      }
+      container.innerHTML = currentUser.goals.map(g => {
+        const percent = (g.saved / g.target) * 100;
+        return `<div class="goal-item"><h4>${g.name}</h4><div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div><div>${currentUser.currencySymbol}${g.saved.toLocaleString()} of ${currentUser.currencySymbol}${g.target.toLocaleString()}</div><div>${percent.toFixed(0)}% complete</div><button onclick="showAddModal('${g.id}')" style="margin-top:12px; background:#F5A623; border:none; padding:8px 16px; border-radius:20px;">Add Money</button></div>`;
+      }).join('');
+    }
+    async function createGoal() {
+      const name = document.getElementById('goalName').value;
+      const target = parseFloat(document.getElementById('goalTarget').value);
+      const deadline = document.getElementById('goalDeadline').value;
+      if (!name || !target || !deadline) { alert('Fill all fields'); return; }
+      document.getElementById('loadingModal').classList.add('active');
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/create-goal`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ name, target, deadline })
+        });
+        if (res.ok) { alert('✅ Goal created!'); location.reload(); }
+        else { alert('Failed'); }
+      } catch(e) { alert('Error'); }
+      document.getElementById('loadingModal').classList.remove('active');
+    }
+    function showAddModal(goalId) { currentGoalId = goalId; document.getElementById('addModal').classList.add('active'); }
+    async function addToGoal() {
+      const amount = parseFloat(document.getElementById('addAmount').value);
+      if (!amount || amount <= 0) { alert('Enter amount'); return; }
+      if (amount > currentUser.balance) { alert('Insufficient balance'); return; }
+      document.getElementById('loadingModal').classList.add('active');
+      try {
+        const res = await fetch(`${API_URL}/user/${currentUser.id}/add-to-goal`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ goalId: currentGoalId, amount })
+        });
+        if (res.ok) { alert(`✅ Added ${currentUser.currencySymbol}${amount} to goal!`); location.reload(); }
+        else { alert('Failed'); }
+      } catch(e) { alert('Error'); }
+      document.getElementById('loadingModal').classList.remove('active');
+      closeModal('addModal');
+      document.getElementById('addAmount').value = '';
+    }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    loadUser();
+    window.createGoal = createGoal;
+    window.showAddModal = showAddModal;
+    window.addToGoal = addToGoal;
+    window.closeModal = closeModal;
+  </script>
+</body>
+</html>
