@@ -2,75 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Create Account | Prime Heritage Trust</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Prime Heritage Trust</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #0A2540 0%, #1F4A6E 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .auth-card { background: white; border-radius: 48px; padding: 48px; width: 100%; max-width: 520px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); animation: slideUp 0.5s ease; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .auth-header { text-align: center; margin-bottom: 32px; }
-    .auth-header i { font-size: 56px; color: #F5A623; margin-bottom: 16px; }
-    .auth-header h2 { font-size: 28px; color: #0A2540; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-group { margin-bottom: 16px; position: relative; }
-    .form-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9AA9B9; }
-    .form-group input, .form-group select { width: 100%; padding: 14px 16px 14px 48px; border: 1px solid #E2E8F0; border-radius: 20px; font-size: 16px; font-family: inherit; background: white; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #F5A623; box-shadow: 0 0 0 3px rgba(245,166,35,0.1); }
-    .btn-auth { width: 100%; padding: 14px; background: #F5A623; color: #0A2540; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 16px; }
-    .btn-auth:hover { background: #FFB84D; transform: translateY(-2px); }
-    .auth-footer { text-align: center; margin-top: 20px; }
-    .auth-footer a { color: #F5A623; text-decoration: none; }
-    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s; }
-    .modal.active { opacity: 1; visibility: visible; }
-    .modal-content { background: white; border-radius: 32px; padding: 32px; width: 90%; max-width: 380px; text-align: center; }
-    .modal-content input { width: 100%; padding: 14px; border: 1px solid #E2E8F0; border-radius: 16px; margin: 16px 0; text-align: center; font-size: 24px; letter-spacing: 8px; }
-    .spinner { width: 40px; height: 40px; border: 3px solid #E2E8F0; border-top-color: #F5A623; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0A2540; color: white; padding: 12px 24px; border-radius: 40px; z-index: 1000; animation: fadeInUp 0.3s ease; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #0A2540, #1F4A6E); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card { background: white; border-radius: 24px; padding: 40px; width: 450px; text-align: center; }
+    input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+    button { background: #F5A623; color: #0A2540; padding: 12px; border: none; border-radius: 40px; width: 100%; font-weight: bold; cursor: pointer; }
+    .link { margin-top: 20px; display: block; color: #F5A623; text-decoration: none; }
   </style>
 </head>
 <body>
-  <div class="auth-card">
-    <div class="auth-header"><i class="fas fa-crown"></i><h2>Create Account</h2><p style="color: #6B7A8A;">Join Prime Heritage Trust Bank</p></div>
-    <form onsubmit="event.preventDefault(); sendVerification();">
-      <div class="form-row">
-        <div class="form-group"><i class="fas fa-user"></i><input type="text" id="regName" placeholder="Full Name" required></div>
-        <div class="form-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="Email Address" required></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><i class="fas fa-phone"></i><input type="tel" id="regPhone" placeholder="Phone Number" required></div>
-        <div class="form-group"><i class="fas fa-globe"></i><select id="regCountry" required><option value="">Select Country</option><option value="US">United States</option><option value="UK">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="NG">Nigeria</option><option value="KE">Kenya</option><option value="ZA">South Africa</option><option value="AE">UAE</option><option value="SG">Singapore</option><option value="DE">Germany</option><option value="FR">France</option></select></div>
-      </div>
-      <div class="form-group"><i class="fas fa-money-bill"></i><select id="regCurrency" required><option value="">Select Currency</option><option value="USD">🇺🇸 USD - US Dollar ($)</option><option value="EUR">🇪🇺 EUR - Euro (€)</option><option value="GBP">🇬🇧 GBP - British Pound (£)</option><option value="JPY">🇯🇵 JPY - Japanese Yen (¥)</option><option value="CAD">🇨🇦 CAD - Canadian Dollar (C$)</option><option value="AUD">🇦🇺 AUD - Australian Dollar (A$)</option><option value="CHF">🇨🇭 CHF - Swiss Franc (CHF)</option><option value="CNY">🇨🇳 CNY - Chinese Yuan (¥)</option><option value="INR">🇮🇳 INR - Indian Rupee (₹)</option><option value="BRL">🇧🇷 BRL - Brazilian Real (R$)</option><option value="ZAR">🇿🇦 ZAR - South African Rand (R)</option><option value="NGN">🇳🇬 NGN - Nigerian Naira (₦)</option><option value="KES">🇰🇪 KES - Kenyan Shilling (KSh)</option><option value="AED">🇦🇪 AED - UAE Dirham (د.إ)</option><option value="SGD">🇸🇬 SGD - Singapore Dollar (S$)</option></select></div>
-      <div class="form-group"><i class="fas fa-lock"></i><input type="password" id="regPin" placeholder="Create Transaction PIN (4-6 digits)" maxlength="6" required></div>
-      <div class="form-group"><i class="fas fa-lock"></i><input type="password" id="regConfirmPin" placeholder="Confirm PIN" maxlength="6" required></div>
-      <button type="submit" class="btn-auth">Create Account</button>
-    </form>
-    <div class="auth-footer"><p>Already have an account? <a href="login.html">Sign In</a></p></div>
+  <div class="card">
+    <h2>Create Account</h2>
+    <input type="text" id="name" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="tel" id="phone" placeholder="Phone Number">
+    <select id="currency">
+      <option value="USD">🇺🇸 USD - US Dollar ($)</option>
+      <option value="EUR">🇪🇺 EUR - Euro (€)</option>
+      <option value="GBP">🇬🇧 GBP - British Pound (£)</option>
+      <option value="NGN">🇳🇬 NGN - Nigerian Naira (₦)</option>
+    </select>
+    <input type="password" id="pin" placeholder="Create PIN (4-6 digits)" maxlength="6">
+    <button onclick="signup()">Create Account</button>
+    <a href="login.html" class="link">Already have an account? Sign In</a>
+    <a href="index.html" class="link">← Back</a>
   </div>
-
-  <div id="verifyModal" class="modal">
-    <div class="modal-content"><i class="fas fa-envelope" style="font-size:48px;color:#F5A623;"></i><h3>Email Verification</h3><p>Enter the 6-digit code sent to <strong id="verifyEmail"></strong></p><input type="text" id="verifyCode" maxlength="6" placeholder="••••••"><button onclick="verifyCode()" class="btn-auth">Verify</button><button onclick="resendCode()" style="background:none;border:none;color:#F5A623;margin-top:12px;">Resend Code</button></div>
-  </div>
-  <div id="loadingModal" class="modal"><div class="modal-content"><div class="spinner"></div><p>Creating your account...</p></div></div>
-
   <script>
-    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
-    let pendingUser = null;
-    function showToast(msg) { const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
-    async function sendVerification() {
-      const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, phone = document.getElementById('regPhone').value, country = document.getElementById('regCountry').value, currency = document.getElementById('regCurrency').value, pin = document.getElementById('regPin').value, confirmPin = document.getElementById('regConfirmPin').value;
-      if (!name || !email || !phone || !country || !currency || !pin) { showToast('All fields required'); return; }
-      if (pin !== confirmPin) { showToast('PINs do not match'); return; }
-      if (pin.length < 4 || pin.length > 6) { showToast('PIN must be 4-6 digits'); return; }
-      pendingUser = { fullName: name, email, phone, country, currency, transactionPin: pin };
-      try { const res = await fetch(`${API_URL}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pendingUser) }); const data = await res.json(); if (res.ok) { document.getElementById('verifyEmail').innerText = email; document.getElementById('verifyModal').classList.add('active'); showToast('6-digit code sent to your email'); } else { showToast(data.error); } } catch(e) { showToast('Failed to send verification'); } }
-    async function verifyCode() { const code = document.getElementById('verifyCode').value; if (!code || code.length !== 6) { showToast('Enter 6-digit code'); return; } document.getElementById('verifyModal').classList.remove('active'); document.getElementById('loadingModal').classList.add('active'); try { const res = await fetch(`${API_URL}/verify`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: pendingUser.email, code }) }); const data = await res.json(); if (res.ok) { sessionStorage.setItem('token', data.token); sessionStorage.setItem('currentUser', JSON.stringify(data.user)); showToast('Account created!'); setTimeout(() => window.location.href = 'dashboard.html', 1500); } else { document.getElementById('loadingModal').classList.remove('active'); showToast(data.error); document.getElementById('verifyModal').classList.add('active'); } } catch(e) { document.getElementById('loadingModal').classList.remove('active'); showToast('Verification failed'); document.getElementById('verifyModal').classList.add('active'); } }
-    function resendCode() { if (pendingUser) sendVerification(); }
+    function signup() {
+      window.location.href = 'login.html';
+    }
   </script>
 </body>
 </html>
