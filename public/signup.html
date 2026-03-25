@@ -1,39 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - Prime Heritage Trust</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #0A2540, #1F4A6E); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .card { background: white; border-radius: 24px; padding: 40px; width: 450px; text-align: center; }
-    input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
-    button { background: #F5A623; color: #0A2540; padding: 12px; border: none; border-radius: 40px; width: 100%; font-weight: bold; cursor: pointer; }
-    .link { margin-top: 20px; display: block; color: #F5A623; text-decoration: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account - Prime Heritage Trust</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg,#0A2540,#1F4A6E);
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.container {
+  display:flex;
+  width:900px;
+  background:white;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.2);
+}
+
+/* LEFT SIDE */
+.left {
+  flex:1;
+  background: linear-gradient(135deg,#0A2540,#1F4A6E);
+  color:white;
+  padding:50px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.left h1 {
+  font-size:32px;
+  margin-bottom:20px;
+}
+
+.left p {
+  opacity:0.8;
+  line-height:1.6;
+}
+
+/* RIGHT FORM */
+.right {
+  flex:1;
+  padding:40px;
+}
+
+.right h2 {
+  margin-bottom:20px;
+}
+
+.input-group {
+  margin-bottom:15px;
+}
+
+input, select {
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+}
+
+input:focus {
+  border-color:#F5A623;
+  outline:none;
+}
+
+/* BUTTON */
+button {
+  width:100%;
+  padding:14px;
+  background:#F5A623;
+  border:none;
+  border-radius:40px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+/* INFO TEXT */
+.small-text {
+  font-size:12px;
+  color:#777;
+  margin-top:5px;
+}
+
+.error {
+  color:red;
+  font-size:12px;
+  display:none;
+}
+
+.success {
+  color:green;
+  font-size:14px;
+  margin-top:10px;
+}
+
+/* LINKS */
+.links {
+  margin-top:20px;
+  font-size:14px;
+}
+
+.links a {
+  color:#F5A623;
+  text-decoration:none;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .container { flex-direction:column; width:95%; }
+  .left { display:none; }
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h2>Create Account</h2>
-    <input type="text" id="name" placeholder="Full Name">
-    <input type="email" id="email" placeholder="Email Address">
-    <input type="tel" id="phone" placeholder="Phone Number">
-    <select id="currency">
-      <option value="USD">🇺🇸 USD - US Dollar ($)</option>
-      <option value="EUR">🇪🇺 EUR - Euro (€)</option>
-      <option value="GBP">🇬🇧 GBP - British Pound (£)</option>
-      <option value="NGN">🇳🇬 NGN - Nigerian Naira (₦)</option>
-    </select>
-    <input type="password" id="pin" placeholder="Create PIN (4-6 digits)" maxlength="6">
-    <button onclick="signup()">Create Account</button>
-    <a href="login.html" class="link">Already have an account? Sign In</a>
-    <a href="index.html" class="link">← Back</a>
+
+<div class="container">
+
+  <!-- LEFT -->
+  <div class="left">
+    <h1>Secure Banking Starts Here</h1>
+    <p>
+      Open your Prime Heritage Trust account in minutes.
+      Enjoy global transfers, virtual cards, and secure banking.
+    </p>
   </div>
-  <script>
-    function signup() {
-      window.location.href = 'login.html';
-    }
-  </script>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <h2>Create Account</h2>
+
+    <div class="input-group">
+      <input type="text" id="name" placeholder="Full Name">
+    </div>
+
+    <div class="input-group">
+      <input type="email" id="email" placeholder="Email Address">
+    </div>
+
+    <div class="input-group">
+      <input type="tel" id="phone" placeholder="Phone Number">
+    </div>
+
+    <div class="input-group">
+      <select id="currency">
+        <option value="USD">USD - US Dollar ($)</option>
+        <option value="EUR">EUR - Euro (€)</option>
+        <option value="GBP">GBP - Pound (£)</option>
+        <option value="NGN">NGN - Naira (₦)</option>
+      </select>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Create Password">
+    </div>
+
+    <div class="input-group">
+      <input type="password" id="confirmPassword" placeholder="Confirm Password">
+      <div id="passError" class="error">Passwords do not match</div>
+    </div>
+
+    <!-- PIN -->
+    <div class="input-group">
+      <input type="password" id="pin" placeholder="Transaction PIN (4 digits)" maxlength="4">
+      <div class="small-text">Used to approve transactions</div>
+    </div>
+
+    <button onclick="signup()">Create Secure Account</button>
+
+    <div id="successMsg" class="success"></div>
+
+    <div class="links">
+      <a href="login.html">Already have an account? Sign In</a><br>
+      <a href="index.html">← Back to Home</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function signup() {
+  let password = document.getElementById("password").value;
+  let confirmPassword = document.getElementById("confirmPassword").value;
+  let pin = document.getElementById("pin").value;
+
+  let error = document.getElementById("passError");
+  let success = document.getElementById("successMsg");
+
+  // Reset
+  error.style.display = "none";
+  success.innerHTML = "";
+
+  // Password check
+  if(password !== confirmPassword){
+    error.style.display = "block";
+    return;
+  }
+
+  // PIN validation
+  if(pin.length !== 4 || isNaN(pin)){
+    alert("PIN must be exactly 4 digits");
+    return;
+  }
+
+  // Success simulation
+  success.innerHTML = "Account created successfully. Redirecting...";
+  
+  setTimeout(()=>{
+    window.location.href = "login.html";
+  },2000);
+}
+</script>
+
 </body>
 </html>
